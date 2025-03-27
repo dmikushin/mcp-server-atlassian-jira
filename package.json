@@ -1,6 +1,6 @@
 {
 	"name": "@aashari/mcp-server-atlassian-jira",
-	"version": "1.11.1",
+	"version": "1.11.2",
 	"description": "A TypeScript-based Model Context Protocol (MCP) server for Atlassian Jira integration. Provides tools for accessing and managing Jira projects, issues, and content to connect Claude/Anthropic AI systems to Jira project management.",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",

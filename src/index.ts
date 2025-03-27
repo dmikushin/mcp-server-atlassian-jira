@@ -12,7 +12,7 @@ import atlassianProjectsTools from './tools/atlassian.projects.tool.js';
 import atlassianIssuesTools from './tools/atlassian.issues.tool.js';
 
 // Define version constant for easier management and consistent versioning
-const VERSION = '1.11.1';
+const VERSION = '1.11.2';
 
 let serverInstance: McpServer | null = null;
 let transportInstance: SSEServerTransport | StdioServerTransport | null = null;

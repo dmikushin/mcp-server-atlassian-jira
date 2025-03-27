@@ -1,3 +1,10 @@
+## [1.11.2](https://github.com/aashari/mcp-server-atlassian-jira/compare/v1.11.1...v1.11.2) (2025-03-27)
+
+
+### Bug Fixes
+
+* trigger new release ([88f86fa](https://github.com/aashari/mcp-server-atlassian-jira/commit/88f86fa6f258fe8ce1fb4a17b83e1f4ce5451b2c))
+
 ## [1.11.1](https://github.com/aashari/mcp-server-atlassian-jira/compare/v1.11.0...v1.11.1) (2025-03-27)
 
 
