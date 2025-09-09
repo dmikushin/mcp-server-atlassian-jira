@@ -115,7 +115,7 @@ describe('Atlassian Search Controller', () => {
 			} catch (error) {
 				expect(error).toBeInstanceOf(McpError);
 				// The error might have a generic error message, so we'll just check that it's a McpError
-				expect((error as McpError).statusCode).toBe(410);
+				expect((error as McpError).statusCode).toBe(400);
 			}
 		}, 30000);
 

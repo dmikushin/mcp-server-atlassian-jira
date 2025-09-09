@@ -125,8 +125,20 @@ export function extractPaginationInfo<T extends Record<string, unknown>>(
 						offsetData.comments?.length ??
 						offsetData.values?.length;
 
-					// Handle Jira's offset-based pagination
-					if (
+					// Handle both old and new Jira pagination formats
+					// New API format (enhanced JQL search)
+					if ('nextPageToken' in data && 'isLast' in data) {
+						const newApiData = data as {
+							nextPageToken?: string;
+							isLast?: boolean;
+						};
+						hasMore = !newApiData.isLast;
+						nextCursor = newApiData.nextPageToken;
+						// New API doesn't provide total count
+						return { nextCursor, hasMore, count, total: undefined };
+					}
+					// Legacy API format (deprecated search endpoint)
+					else if (
 						offsetData.startAt !== undefined &&
 						offsetData.maxResults !== undefined &&
 						offsetData.total !== undefined &&

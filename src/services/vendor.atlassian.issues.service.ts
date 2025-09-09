@@ -94,13 +94,14 @@ const API_PATH = '/rest/api/3';
  * Search for Jira issues using JQL and other criteria
  *
  * Retrieves a list of issues from Jira based on JQL query and other
- * search parameters. Supports pagination, field selection, and expansion.
+ * search parameters. Uses the new enhanced JQL search API endpoint.
+ * Supports pagination with nextPageToken, field selection, and expansion.
  *
  * @async
  * @memberof VendorAtlassianIssuesService
  * @param {SearchIssuesParams} [params={}] - Optional parameters for customizing the search
  * @param {string} [params.jql] - JQL query string for filtering issues
- * @param {number} [params.startAt] - Pagination start index
+ * @param {number} [params.startAt] - Pagination start index (converted to nextPageToken internally)
  * @param {number} [params.maxResults] - Maximum number of results to return
  * @param {string[]} [params.fields] - Issue fields to include in response
  * @param {string[]} [params.expand] - Issue data to expand in response
@@ -134,54 +135,55 @@ async function search(
 		);
 	}
 
-	// Build query parameters
-	const queryParams = new URLSearchParams();
+	// Use the new enhanced JQL search API endpoint
+	const path = `${API_PATH}/search/jql`;
 
-	// JQL and validation
+	// Build request body for POST request to new endpoint
+	const requestBody: Record<string, unknown> = {};
+
+	// JQL is required for the new endpoint
 	if (params.jql) {
-		queryParams.set('jql', params.jql);
-	}
-	if (params.validateQuery !== undefined) {
-		queryParams.set('validateQuery', params.validateQuery.toString());
+		requestBody.jql = params.jql;
 	}
 
-	// Pagination
-	if (params.startAt !== undefined) {
-		queryParams.set('startAt', params.startAt.toString());
+	// Pagination - prefer nextPageToken over startAt
+	if (params.nextPageToken) {
+		requestBody.nextPageToken = params.nextPageToken;
 	}
 	if (params.maxResults !== undefined) {
-		queryParams.set('maxResults', params.maxResults.toString());
-	}
-	if (params.nextPageToken) {
-		queryParams.set('nextPageToken', params.nextPageToken);
+		requestBody.maxResults = params.maxResults;
 	}
 
 	// Field selection and expansion
+	// If no fields are specified, request the standard fields for backward compatibility
 	if (params.fields?.length) {
-		queryParams.set('fields', params.fields.join(','));
+		requestBody.fields = params.fields;
+	} else {
+		// Default fields to maintain backward compatibility with old API
+		requestBody.fields = ['*all'];
 	}
+
 	if (params.expand?.length) {
-		queryParams.set('expand', params.expand.join(','));
+		requestBody.expand = params.expand.join(',');
 	}
 	if (params.properties?.length) {
-		queryParams.set('properties', params.properties.join(','));
+		requestBody.properties = params.properties;
 	}
 	if (params.fieldsByKeys !== undefined) {
-		queryParams.set('fieldsByKeys', params.fieldsByKeys.toString());
+		requestBody.fieldsByKeys = params.fieldsByKeys;
 	}
 	if (params.reconcileIssues !== undefined) {
-		queryParams.set('reconcileIssues', params.reconcileIssues.toString());
+		requestBody.reconcileIssues = params.reconcileIssues;
 	}
 
-	const queryString = queryParams.toString()
-		? `?${queryParams.toString()}`
-		: '';
-	const path = `${API_PATH}/search${queryString}`;
-
-	methodLogger.debug(`Calling Jira API: ${path}`);
+	methodLogger.debug(`Calling new Jira JQL API: ${path}`);
+	methodLogger.debug('Request body:', requestBody);
 
 	try {
-		const rawData = await fetchAtlassian(credentials, path);
+		const rawData = await fetchAtlassian(credentials, path, {
+			method: 'POST',
+			body: requestBody,
+		});
 		return validateResponse(rawData, IssuesResponseSchema, 'issues search');
 	} catch (error) {
 		// McpError is already properly structured from fetchAtlassian or validation

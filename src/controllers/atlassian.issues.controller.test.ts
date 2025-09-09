@@ -32,9 +32,14 @@ describe('Atlassian Issues Controller', () => {
 			expect(result).toHaveProperty('content');
 			expect(typeof result.content).toBe('string');
 
-			// Check that content does NOT contain pagination string
+			// Check that content contains pagination information
 			expect(result.content).toContain('Showing');
-			expect(result.content).toContain('total items');
+			// New API doesn't provide total count, so check for either format
+			const hasLegacyFormat = result.content.includes('total items');
+			const hasNewFormat =
+				result.content.includes('items.') &&
+				!result.content.includes('total items');
+			expect(hasLegacyFormat || hasNewFormat).toBe(true);
 
 			// Check basic markdown content - check for expected formatting from live data
 			if (result.content !== 'No issues found matching your criteria.') {
@@ -121,9 +126,14 @@ describe('Atlassian Issues Controller', () => {
 			expect(result.content).toContain(formatSeparator());
 			expect(result.content).toContain('Information retrieved at:');
 
-			// Check that content does NOT contain pagination string
+			// Check that content contains pagination information
 			expect(result.content).toContain('Showing');
-			expect(result.content).toContain('total items');
+			// New API doesn't provide total count, so check for either format
+			const hasLegacyFormat = result.content.includes('total items');
+			const hasNewFormat =
+				result.content.includes('items.') &&
+				!result.content.includes('total items');
+			expect(hasLegacyFormat || hasNewFormat).toBe(true);
 		}, 30000);
 
 		it('should handle error for invalid JQL', async () => {
@@ -138,7 +148,7 @@ describe('Atlassian Issues Controller', () => {
 			} catch (error) {
 				expect(error).toBeInstanceOf(McpError);
 				// The error might have a generic error message, so we'll just check the status code
-				expect((error as McpError).statusCode).toBe(410);
+				expect((error as McpError).statusCode).toBe(400);
 			}
 		}, 30000);
 	});

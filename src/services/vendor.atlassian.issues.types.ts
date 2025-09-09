@@ -400,18 +400,22 @@ export interface GetIssueByIdParams {
 }
 
 /**
- * API response for searching issues
+ * API response for searching issues (new enhanced JQL search endpoint)
+ * The new /search/jql endpoint returns a different structure without total, maxResults, startAt
  */
 const IssuesResponseSchema = z.object({
 	expand: z.string().optional(),
-	startAt: z.number(),
-	maxResults: z.number(),
-	total: z.number(),
+	// Legacy fields for backward compatibility - marked as optional since new API doesn't return them
+	startAt: z.number().optional(),
+	maxResults: z.number().optional(),
+	total: z.number().optional(),
+	// New API response structure
 	issues: z.array(IssueSchema),
+	isLast: z.boolean().optional(), // Indicates if this is the last page
+	nextPageToken: z.string().optional(), // Token for next page in new API
 	warningMessages: z.array(z.string()).optional(),
 	names: z.record(z.string(), z.string()).optional(),
 	schema: z.record(z.string(), z.unknown()).optional(),
-	nextPageToken: z.string().optional(),
 });
 export type IssuesResponse = z.infer<typeof IssuesResponseSchema>;
 

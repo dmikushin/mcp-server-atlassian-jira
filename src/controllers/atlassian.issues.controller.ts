@@ -128,6 +128,14 @@ async function list(
 
 		let finalJql = jqlParts.join(' AND ');
 
+		// Handle the case where no search criteria are provided
+		if (finalJql.trim() === '') {
+			// Default search if no criteria provided - must be bounded for new API
+			// Use a reasonable time window to ensure the query is bounded
+			finalJql = 'updated >= -90d';
+		}
+
+		// Apply ordering logic only after ensuring we have a base query
 		if (mergedOptions.orderBy) {
 			if (!finalJql.toUpperCase().includes('ORDER BY')) {
 				finalJql += ` ORDER BY ${mergedOptions.orderBy}`;
@@ -144,11 +152,6 @@ async function list(
 			finalJql += ' ORDER BY updated DESC';
 		}
 
-		if (finalJql.trim() === '') {
-			// Default search if no criteria provided - maybe just order by updated?
-			finalJql = 'ORDER BY updated DESC';
-		}
-
 		methodLogger.debug(`Executing generated JQL: ${finalJql}`);
 
 		const params: SearchIssuesParams = {
@@ -162,7 +165,7 @@ async function list(
 		const issuesData = await atlassianIssuesService.search(params);
 
 		methodLogger.debug(
-			`Retrieved ${issuesData.issues.length} issues out of ${issuesData.total} total`,
+			`Retrieved ${issuesData.issues.length} issues${issuesData.isLast ? ' (final page)' : ' (more available)'}`,
 		);
 
 		const pagination = extractPaginationInfo(

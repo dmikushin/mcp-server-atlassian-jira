@@ -24,18 +24,21 @@ describe('Vendor Atlassian Issues Service', () => {
 		it('should return a list of issues', async () => {
 			if (skipIfNoCredentials()) return;
 
-			// Call the function with the real API
+			// Call the function with the real API using bounded JQL query
 			const result = await atlassianIssuesService.search({
 				jql: 'created >= -30d',
 				maxResults: 5,
 			});
 
-			// Verify the response structure
+			// Verify the response structure (new API response)
 			expect(result).toHaveProperty('issues');
 			expect(Array.isArray(result.issues)).toBe(true);
-			expect(result).toHaveProperty('total');
-			expect(result).toHaveProperty('maxResults');
-			expect(result).toHaveProperty('startAt');
+			// New API response structure
+			expect(result).toHaveProperty('isLast');
+			// nextPageToken is optional (only present if there are more pages)
+			if (!result.isLast) {
+				expect(result).toHaveProperty('nextPageToken');
+			}
 
 			// If issues are returned, verify their structure
 			if (result.issues.length > 0) {
@@ -48,29 +51,29 @@ describe('Vendor Atlassian Issues Service', () => {
 			}
 		}, 30000);
 
-		it('should handle pagination parameters', async () => {
+		it('should handle pagination with nextPageToken', async () => {
 			if (skipIfNoCredentials()) return;
 
-			// Call the function with pagination parameters
+			// Call the function with pagination parameters and bounded JQL
 			const result = await atlassianIssuesService.search({
+				jql: 'created >= -30d',
 				maxResults: 2,
-				startAt: 0,
 			});
 
-			// Verify pagination parameters are respected
-			expect(result.maxResults).toBe(2);
-			expect(result.startAt).toBe(0);
+			// Verify response structure
+			expect(result).toHaveProperty('issues');
 			expect(result.issues.length).toBeLessThanOrEqual(2);
+			expect(result).toHaveProperty('isLast');
 
-			// If there are more than 2 total issues, test the second page
-			if (result.total > 2) {
+			// If there are more pages, test pagination with nextPageToken
+			if (!result.isLast && result.nextPageToken) {
 				const page2 = await atlassianIssuesService.search({
+					jql: 'created >= -30d',
 					maxResults: 2,
-					startAt: 2,
+					nextPageToken: result.nextPageToken,
 				});
 
-				expect(page2.startAt).toBe(2);
-				expect(page2.maxResults).toBe(2);
+				expect(page2).toHaveProperty('issues');
 				expect(page2.issues.length).toBeLessThanOrEqual(2);
 
 				// If both pages have at least one issue, verify they're different
@@ -83,8 +86,9 @@ describe('Vendor Atlassian Issues Service', () => {
 		it('should support searching with simple JQL (project=KEY)', async () => {
 			if (skipIfNoCredentials()) return;
 
-			// First, get a list of issues to extract a project key
+			// First, get a list of issues to extract a project key using bounded query
 			const initialSearch = await atlassianIssuesService.search({
+				jql: 'created >= -30d',
 				maxResults: 1,
 			});
 
@@ -226,7 +230,7 @@ describe('Vendor Atlassian Issues Service', () => {
 			} catch (error) {
 				expect(error).toBeInstanceOf(McpError);
 				// The error might have a generic message, so just check that it's a 400 Bad Request
-				expect((error as McpError).statusCode).toBe(410);
+				expect((error as McpError).statusCode).toBe(400);
 			}
 		}, 30000);
 
@@ -243,7 +247,8 @@ describe('Vendor Atlassian Issues Service', () => {
 			expect(result).toHaveProperty('issues');
 			expect(Array.isArray(result.issues)).toBe(true);
 			expect(result.issues.length).toBe(0);
-			expect(result.total).toBe(0);
+			// New API doesn't return total, but should return isLast: true
+			expect(result.isLast).toBe(true);
 		}, 30000);
 	});
 
@@ -253,6 +258,7 @@ describe('Vendor Atlassian Issues Service', () => {
 			if (skipIfNoCredentials()) return null;
 			try {
 				const searchResult = await atlassianIssuesService.search({
+					jql: 'created >= -30d',
 					maxResults: 1,
 				});
 
