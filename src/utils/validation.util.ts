@@ -17,9 +17,9 @@ export const skipValidation = process.env.NODE_ENV === 'test';
  * @returns The validated data
  * @throws {McpError} If validation fails
  */
-export function validateResponse<T, S>(
+export function validateResponse<T>(
 	data: unknown,
-	schema: z.ZodType<T, z.ZodTypeDef, S>,
+	schema: z.ZodType<T>,
 	context: string,
 	serviceIdentifier?: string,
 ): T {

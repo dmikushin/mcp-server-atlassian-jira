@@ -3,7 +3,7 @@ import { Logger } from '../utils/logger.util.js';
 import { formatErrorForMcpTool } from '../utils/error.util.js';
 import {
 	ListStatusesToolArgs,
-	ListStatusesToolArgsType,
+	type ListStatusesToolArgsType,
 } from './atlassian.statuses.types.js';
 import atlassianStatusesController from '../controllers/atlassian.statuses.controller.js';
 
@@ -17,12 +17,14 @@ toolLogger.debug('Jira statuses tool module initialized');
  * @param {ListStatusesToolArgsType} args - Tool arguments with optional projectKeyOrId
  * @returns {Promise<object>} MCP response object with formatted Markdown
  */
-async function handleListStatuses(args: ListStatusesToolArgsType) {
+async function handleListStatuses(args: Record<string, unknown>) {
 	const methodLogger = toolLogger.forMethod('handleListStatuses');
 	methodLogger.debug('Listing Jira statuses with arguments:', args);
 
 	try {
-		const result = await atlassianStatusesController.listStatuses(args);
+		const result = await atlassianStatusesController.listStatuses(
+			args as ListStatusesToolArgsType,
+		);
 
 		methodLogger.debug('Successfully retrieved statuses');
 

@@ -3,9 +3,9 @@ import { Logger } from '../utils/logger.util.js';
 import { formatErrorForMcpTool } from '../utils/error.util.js';
 import {
 	ListProjectsToolArgs,
-	ListProjectsToolArgsType,
+	type ListProjectsToolArgsType,
 	GetProjectToolArgs,
-	GetProjectToolArgsType,
+	type GetProjectToolArgsType,
 } from './atlassian.projects.types.js';
 
 import atlassianProjectsController from '../controllers/atlassian.projects.controller.js';
@@ -26,7 +26,7 @@ toolLogger.debug('Jira projects tool module initialized');
  * @returns {Promise<{ content: Array<{ type: 'text', text: string }> }>} MCP response with formatted projects list
  * @throws Will return error message if project listing fails
  */
-async function listProjects(args: ListProjectsToolArgsType) {
+async function listProjects(args: Record<string, unknown>) {
 	const methodLogger = Logger.forContext(
 		'tools/atlassian.projects.tool.ts',
 		'listProjects',
@@ -35,7 +35,9 @@ async function listProjects(args: ListProjectsToolArgsType) {
 
 	try {
 		// Pass args directly to the controller
-		const result = await atlassianProjectsController.list(args);
+		const result = await atlassianProjectsController.list(
+			args as ListProjectsToolArgsType,
+		);
 
 		methodLogger.debug('Successfully retrieved projects list');
 
@@ -64,7 +66,7 @@ async function listProjects(args: ListProjectsToolArgsType) {
  * @returns {Promise<{ content: Array<{ type: 'text', text: string }> }>} MCP response with formatted project details
  * @throws Will return error message if project retrieval fails
  */
-async function getProject(args: GetProjectToolArgsType) {
+async function getProject(args: Record<string, unknown>) {
 	const methodLogger = Logger.forContext(
 		'tools/atlassian.projects.tool.ts',
 		'getProject',
@@ -76,7 +78,9 @@ async function getProject(args: GetProjectToolArgsType) {
 
 	try {
 		// Pass args directly to the controller
-		const result = await atlassianProjectsController.get(args);
+		const result = await atlassianProjectsController.get(
+			args as GetProjectToolArgsType,
+		);
 		methodLogger.debug(
 			'Successfully retrieved project details from controller',
 		);

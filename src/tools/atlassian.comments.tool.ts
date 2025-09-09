@@ -3,9 +3,9 @@ import { Logger } from '../utils/logger.util.js';
 import { formatErrorForMcpTool } from '../utils/error.util.js';
 import {
 	ListCommentsToolArgs,
-	ListCommentsToolArgsType,
+	type ListCommentsToolArgsType,
 	AddCommentToolArgs,
-	AddCommentToolArgsType,
+	type AddCommentToolArgsType,
 } from './atlassian.comments.types.js';
 import atlassianCommentsController from '../controllers/atlassian.comments.controller.js';
 
@@ -25,7 +25,7 @@ toolLogger.debug('Jira comments tool module initialized');
  * @returns {Promise<{ content: Array<{ type: 'text', text: string }> }>} MCP response with formatted comments list
  * @throws Will return error message if comment listing fails
  */
-async function listComments(args: ListCommentsToolArgsType) {
+async function listComments(args: Record<string, unknown>) {
 	const methodLogger = Logger.forContext(
 		'tools/atlassian.comments.tool.ts',
 		'listComments',
@@ -33,7 +33,9 @@ async function listComments(args: ListCommentsToolArgsType) {
 	methodLogger.debug('Listing Jira comments with args:', args);
 
 	try {
-		const result = await atlassianCommentsController.listComments(args);
+		const result = await atlassianCommentsController.listComments(
+			args as ListCommentsToolArgsType,
+		);
 
 		methodLogger.debug('Successfully retrieved comments list');
 
@@ -62,18 +64,21 @@ async function listComments(args: ListCommentsToolArgsType) {
  * @returns {Promise<{ content: Array<{ type: 'text', text: string }> }>} MCP response with confirmation
  * @throws Will return error message if comment addition fails
  */
-async function addComment(args: AddCommentToolArgsType) {
+async function addComment(args: Record<string, unknown>) {
 	const methodLogger = Logger.forContext(
 		'tools/atlassian.comments.tool.ts',
 		'addComment',
 	);
+	const typedArgs = args as AddCommentToolArgsType;
 	methodLogger.debug('Adding comment to Jira issue:', {
-		issueIdOrKey: args.issueIdOrKey,
-		bodyLength: args.commentBody?.length || 0,
+		issueIdOrKey: typedArgs.issueIdOrKey,
+		bodyLength: typedArgs.commentBody?.length || 0,
 	});
 
 	try {
-		const result = await atlassianCommentsController.addComment(args);
+		const result = await atlassianCommentsController.addComment(
+			args as AddCommentToolArgsType,
+		);
 
 		methodLogger.debug('Successfully added comment');
 

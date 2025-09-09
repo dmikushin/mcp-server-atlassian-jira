@@ -3,9 +3,9 @@ import { Logger } from '../utils/logger.util.js';
 import { formatErrorForMcpTool } from '../utils/error.util.js';
 import {
 	ListIssuesToolArgs,
-	ListIssuesToolArgsType,
+	type ListIssuesToolArgsType,
 	GetIssueToolArgs,
-	GetIssueToolArgsType,
+	type GetIssueToolArgsType,
 } from './atlassian.issues.types.js';
 import atlassianIssuesController from '../controllers/atlassian.issues.controller.js';
 
@@ -26,7 +26,7 @@ toolLogger.debug('Jira issues tool module initialized');
  * @returns {Promise<{ content: Array<{ type: 'text', text: string }> }>} MCP response with formatted issues list
  * @throws Will return error message if issue listing fails
  */
-async function listIssues(args: ListIssuesToolArgsType) {
+async function listIssues(args: Record<string, unknown>) {
 	const methodLogger = Logger.forContext(
 		'tools/atlassian.issues.tool.ts',
 		'listIssues',
@@ -35,7 +35,9 @@ async function listIssues(args: ListIssuesToolArgsType) {
 
 	try {
 		// This is a pass-through function, so we pass all args directly to the controller
-		const result = await atlassianIssuesController.list(args);
+		const result = await atlassianIssuesController.list(
+			args as ListIssuesToolArgsType,
+		);
 
 		methodLogger.debug('Successfully retrieved issues list');
 
@@ -64,7 +66,7 @@ async function listIssues(args: ListIssuesToolArgsType) {
  * @returns {Promise<{ content: Array<{ type: 'text', text: string }> }>} MCP response with formatted issue details
  * @throws Will return error message if issue retrieval fails
  */
-async function getIssue(args: GetIssueToolArgsType) {
+async function getIssue(args: Record<string, unknown>) {
 	const methodLogger = Logger.forContext(
 		'tools/atlassian.issues.tool.ts',
 		'getIssue',
@@ -74,7 +76,9 @@ async function getIssue(args: GetIssueToolArgsType) {
 
 	try {
 		// Pass args directly to the controller
-		const result = await atlassianIssuesController.get(args);
+		const result = await atlassianIssuesController.get(
+			args as GetIssueToolArgsType,
+		);
 		methodLogger.debug('Successfully retrieved issue details');
 
 		return {

@@ -56,7 +56,7 @@ export const CreateIssueToolArgsSchema = z.object({
 		.optional()
 		.describe('Array of fix version IDs or names'),
 	customFields: z
-		.record(z.unknown())
+		.record(z.string(), z.unknown())
 		.optional()
 		.describe(
 			'Custom fields as key-value pairs (e.g., {"customfield_10001": "value"})',

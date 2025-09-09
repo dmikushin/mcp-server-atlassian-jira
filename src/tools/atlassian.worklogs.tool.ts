@@ -7,10 +7,10 @@ import {
 	AddWorklogToolArgsSchema,
 	UpdateWorklogToolArgsSchema,
 	DeleteWorklogToolArgsSchema,
-	ListWorklogsToolArgsType,
-	AddWorklogToolArgsType,
-	UpdateWorklogToolArgsType,
-	DeleteWorklogToolArgsType,
+	type ListWorklogsToolArgsType,
+	type AddWorklogToolArgsType,
+	type UpdateWorklogToolArgsType,
+	type DeleteWorklogToolArgsType,
 } from './atlassian.worklogs.types.js';
 
 // Create a contextualized logger for this file
@@ -24,7 +24,7 @@ toolLogger.debug('Jira worklogs tool initialized');
  * @param args Tool arguments
  * @returns Formatted list of worklogs
  */
-async function handleListWorklogs(args: ListWorklogsToolArgsType) {
+async function handleListWorklogs(args: Record<string, unknown>) {
 	const methodLogger = Logger.forContext(
 		'tools/atlassian.worklogs.tool.ts',
 		'handleListWorklogs',
@@ -32,7 +32,9 @@ async function handleListWorklogs(args: ListWorklogsToolArgsType) {
 	methodLogger.debug('Handling list worklogs request', args);
 
 	try {
-		const result = await atlassianWorklogsController.listWorklogs(args);
+		const result = await atlassianWorklogsController.listWorklogs(
+			args as ListWorklogsToolArgsType,
+		);
 		return {
 			content: [
 				{
@@ -52,7 +54,7 @@ async function handleListWorklogs(args: ListWorklogsToolArgsType) {
  * @param args Tool arguments
  * @returns Confirmation of added worklog
  */
-async function handleAddWorklog(args: AddWorklogToolArgsType) {
+async function handleAddWorklog(args: Record<string, unknown>) {
 	const methodLogger = Logger.forContext(
 		'tools/atlassian.worklogs.tool.ts',
 		'handleAddWorklog',
@@ -60,7 +62,9 @@ async function handleAddWorklog(args: AddWorklogToolArgsType) {
 	methodLogger.debug('Handling add worklog request', args);
 
 	try {
-		const result = await atlassianWorklogsController.addWorklog(args);
+		const result = await atlassianWorklogsController.addWorklog(
+			args as AddWorklogToolArgsType,
+		);
 		return {
 			content: [
 				{
@@ -80,7 +84,7 @@ async function handleAddWorklog(args: AddWorklogToolArgsType) {
  * @param args Tool arguments
  * @returns Confirmation of updated worklog
  */
-async function handleUpdateWorklog(args: UpdateWorklogToolArgsType) {
+async function handleUpdateWorklog(args: Record<string, unknown>) {
 	const methodLogger = Logger.forContext(
 		'tools/atlassian.worklogs.tool.ts',
 		'handleUpdateWorklog',
@@ -88,7 +92,9 @@ async function handleUpdateWorklog(args: UpdateWorklogToolArgsType) {
 	methodLogger.debug('Handling update worklog request', args);
 
 	try {
-		const result = await atlassianWorklogsController.updateWorklog(args);
+		const result = await atlassianWorklogsController.updateWorklog(
+			args as UpdateWorklogToolArgsType,
+		);
 		return {
 			content: [
 				{
@@ -108,7 +114,7 @@ async function handleUpdateWorklog(args: UpdateWorklogToolArgsType) {
  * @param args Tool arguments
  * @returns Confirmation of deleted worklog
  */
-async function handleDeleteWorklog(args: DeleteWorklogToolArgsType) {
+async function handleDeleteWorklog(args: Record<string, unknown>) {
 	const methodLogger = Logger.forContext(
 		'tools/atlassian.worklogs.tool.ts',
 		'handleDeleteWorklog',
@@ -116,7 +122,9 @@ async function handleDeleteWorklog(args: DeleteWorklogToolArgsType) {
 	methodLogger.debug('Handling delete worklog request', args);
 
 	try {
-		const result = await atlassianWorklogsController.deleteWorklog(args);
+		const result = await atlassianWorklogsController.deleteWorklog(
+			args as DeleteWorklogToolArgsType,
+		);
 		return {
 			content: [
 				{

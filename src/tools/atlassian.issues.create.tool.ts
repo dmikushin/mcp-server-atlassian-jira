@@ -2,9 +2,9 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { Logger } from '../utils/logger.util.js';
 import { formatErrorForMcpTool } from '../utils/error.util.js';
 import {
-	GetCreateMetaToolArgsType,
+	type GetCreateMetaToolArgsType,
 	GetCreateMetaToolArgsSchema,
-	CreateIssueToolArgsType,
+	type CreateIssueToolArgsType,
 	CreateIssueToolArgsSchema,
 } from './atlassian.issues.create.types.js';
 import atlassianIssuesCreateController from '../controllers/atlassian.issues.create.controller.js';
@@ -25,7 +25,7 @@ toolLogger.debug('Jira issues create tool module initialized');
  * @returns {Promise<{ content: Array<{ type: 'text', text: string }> }>} MCP response with formatted metadata
  * @throws Will return error message if metadata retrieval fails
  */
-async function getCreateMeta(args: GetCreateMetaToolArgsType) {
+async function getCreateMeta(args: Record<string, unknown>) {
 	const methodLogger = Logger.forContext(
 		'tools/atlassian.issues.create.tool.ts',
 		'getCreateMeta',
@@ -33,8 +33,9 @@ async function getCreateMeta(args: GetCreateMetaToolArgsType) {
 	methodLogger.debug('Getting create metadata for project:', args);
 
 	try {
-		const result =
-			await atlassianIssuesCreateController.getCreateMeta(args);
+		const result = await atlassianIssuesCreateController.getCreateMeta(
+			args as GetCreateMetaToolArgsType,
+		);
 
 		methodLogger.debug('Successfully retrieved create metadata');
 
@@ -62,7 +63,7 @@ async function getCreateMeta(args: GetCreateMetaToolArgsType) {
  * @returns {Promise<{ content: Array<{ type: 'text', text: string }> }>} MCP response with creation result
  * @throws Will return error message if issue creation fails
  */
-async function createIssue(args: CreateIssueToolArgsType) {
+async function createIssue(args: Record<string, unknown>) {
 	const methodLogger = Logger.forContext(
 		'tools/atlassian.issues.create.tool.ts',
 		'createIssue',
@@ -71,7 +72,9 @@ async function createIssue(args: CreateIssueToolArgsType) {
 	methodLogger.debug('Creating new issue:', args);
 
 	try {
-		const result = await atlassianIssuesCreateController.createIssue(args);
+		const result = await atlassianIssuesCreateController.createIssue(
+			args as CreateIssueToolArgsType,
+		);
 		methodLogger.debug('Successfully created issue');
 
 		return {

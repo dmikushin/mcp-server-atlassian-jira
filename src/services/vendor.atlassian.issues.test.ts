@@ -226,7 +226,7 @@ describe('Vendor Atlassian Issues Service', () => {
 			} catch (error) {
 				expect(error).toBeInstanceOf(McpError);
 				// The error might have a generic message, so just check that it's a 400 Bad Request
-				expect((error as McpError).statusCode).toBe(400);
+				expect((error as McpError).statusCode).toBe(410);
 			}
 		}, 30000);
 

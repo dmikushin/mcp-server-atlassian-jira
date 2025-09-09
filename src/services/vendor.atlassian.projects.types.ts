@@ -101,7 +101,7 @@ const ProjectDetailedSchema = ProjectSchema.extend({
 			active: z.boolean(),
 			self: z.string().optional(),
 			accountId: z.string().optional(),
-			avatarUrls: z.record(z.string()).optional(),
+			avatarUrls: z.record(z.string(), z.string()).optional(),
 		})
 		.optional(),
 	components: z.array(ProjectComponentSchema),

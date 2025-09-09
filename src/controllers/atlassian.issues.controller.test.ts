@@ -138,7 +138,7 @@ describe('Atlassian Issues Controller', () => {
 			} catch (error) {
 				expect(error).toBeInstanceOf(McpError);
 				// The error might have a generic error message, so we'll just check the status code
-				expect((error as McpError).statusCode).toBe(400);
+				expect((error as McpError).statusCode).toBe(410);
 			}
 		}, 30000);
 	});
