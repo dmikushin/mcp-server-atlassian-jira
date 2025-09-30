@@ -1,5 +1,6 @@
 import { Logger } from '../utils/logger.util.js';
 import atlassianIssuesService from '../services/vendor.atlassian.issues.service.js';
+import atlassianUsersService from '../services/vendor.atlassian.users.service.js';
 import {
 	GetCreateMetaToolArgsType,
 	CreateIssueToolArgsType,
@@ -90,8 +91,22 @@ async function createIssue(args: CreateIssueToolArgsType) {
 	}
 
 	if (args.assignee) {
-		// Assume account ID format
-		fields.assignee = { accountId: args.assignee };
+		// Resolve assignee identifier to accountId if needed
+		const assigneeAccountId = await atlassianUsersService.resolveUserIdentifier(
+			args.assignee,
+		);
+		if (assigneeAccountId) {
+			fields.assignee = { accountId: assigneeAccountId };
+			methodLogger.debug(
+				`Resolved assignee "${args.assignee}" to accountId: ${assigneeAccountId}`,
+			);
+		} else {
+			methodLogger.warn(
+				`Could not resolve assignee identifier: ${args.assignee}`,
+			);
+			// Still try with the original value as a fallback
+			fields.assignee = { accountId: args.assignee };
+		}
 	}
 
 	if (args.labels?.length) {
