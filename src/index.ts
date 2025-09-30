@@ -14,6 +14,7 @@ import cors from 'cors';
 import atlassianProjectsTools from './tools/atlassian.projects.tool.js';
 import atlassianIssuesTools from './tools/atlassian.issues.tool.js';
 import atlassianIssuesCreateTools from './tools/atlassian.issues.create.tool.js';
+import atlassianIssuesTransitionsTools from './tools/atlassian.issues.transitions.tool.js';
 import atlassianStatusesTools from './tools/atlassian.statuses.tool.js';
 import atlassianCommentsTools from './tools/atlassian.comments.tool.js';
 import atlassianWorklogsTools from './tools/atlassian.worklogs.tool.js';
@@ -76,6 +77,9 @@ export async function startServer(
 
 	atlassianIssuesCreateTools.registerTools(serverInstance);
 	serverLogger.debug('Registered Issues Create tools');
+
+	atlassianIssuesTransitionsTools.registerTools(serverInstance);
+	serverLogger.debug('Registered Issues Transitions tools');
 
 	atlassianStatusesTools.registerTools(serverInstance);
 	serverLogger.debug('Registered Statuses tools');

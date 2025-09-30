@@ -25,6 +25,9 @@ import {
 	CreateIssueParams,
 	CreateIssueResponse,
 	CreateIssueResponseSchema,
+	GetTransitionsResponse,
+	GetTransitionsResponseSchema,
+	TransitionIssueParams,
 } from './vendor.atlassian.issues.types.js';
 import {
 	createAuthMissingError,
@@ -979,6 +982,120 @@ async function createIssue(
 	}
 }
 
+/**
+ * Get available transitions for a Jira issue
+ *
+ * Fetches all available transitions that can be performed on the specified issue
+ * based on its current status and workflow configuration.
+ *
+ * @async
+ * @memberof VendorAtlassianIssuesService
+ * @param {string} issueIdOrKey - The ID or key of the issue
+ * @returns {Promise<GetTransitionsResponse>} Promise resolving to available transitions
+ * @throws {Error} If Atlassian credentials are missing or API request fails
+ */
+async function getTransitions(
+	issueIdOrKey: string,
+): Promise<GetTransitionsResponse> {
+	const methodLogger = Logger.forContext(
+		'services/vendor.atlassian.issues.service.ts',
+		'getTransitions',
+	);
+
+	try {
+		methodLogger.debug(`Getting transitions for issue ${issueIdOrKey}`);
+
+		const credentials = getAtlassianCredentials();
+		if (!credentials) {
+			throw createAuthMissingError(
+				`Atlassian credentials required to get transitions for issue ${issueIdOrKey}`,
+			);
+		}
+
+		const path = `/rest/api/3/issue/${encodeURIComponent(issueIdOrKey)}/transitions`;
+
+		const rawData = await fetchAtlassian(credentials, path);
+
+		return validateResponse(
+			rawData,
+			GetTransitionsResponseSchema,
+			'get transitions',
+		);
+	} catch (error) {
+		if (error instanceof McpError) {
+			throw error;
+		}
+
+		methodLogger.error(`Unexpected error getting transitions for issue ${issueIdOrKey}:`, error);
+		throw createApiError(
+			`Unexpected error getting transitions for Jira issue ${issueIdOrKey}: ${error instanceof Error ? error.message : String(error)}`,
+			500,
+			error,
+		);
+	}
+}
+
+/**
+ * Perform a transition on a Jira issue
+ *
+ * Changes the status of an issue by executing a workflow transition.
+ *
+ * @async
+ * @memberof VendorAtlassianIssuesService
+ * @param {string} issueIdOrKey - The ID or key of the issue
+ * @param {TransitionIssueParams} params - Transition parameters including transition ID and optional fields
+ * @returns {Promise<void>} Promise that resolves when the transition is complete
+ * @throws {Error} If Atlassian credentials are missing or API request fails
+ */
+async function transitionIssue(
+	issueIdOrKey: string,
+	params: TransitionIssueParams,
+): Promise<void> {
+	const methodLogger = Logger.forContext(
+		'services/vendor.atlassian.issues.service.ts',
+		'transitionIssue',
+	);
+
+	try {
+		methodLogger.debug(
+			`Transitioning issue ${issueIdOrKey} with transition ${params.transition.id}`,
+		);
+
+		const credentials = getAtlassianCredentials();
+		if (!credentials) {
+			throw createAuthMissingError(
+				`Atlassian credentials required to transition issue ${issueIdOrKey}`,
+			);
+		}
+
+		const path = `/rest/api/3/issue/${encodeURIComponent(issueIdOrKey)}/transitions`;
+
+		await fetchAtlassian(credentials, path, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(params),
+		});
+
+		methodLogger.debug(`Successfully transitioned issue ${issueIdOrKey}`);
+	} catch (error) {
+		if (error instanceof McpError) {
+			throw error;
+		}
+
+		methodLogger.error(
+			`Unexpected error transitioning issue ${issueIdOrKey}:`,
+			error,
+		);
+		throw createApiError(
+			`Unexpected error transitioning Jira issue ${issueIdOrKey}: ${error instanceof Error ? error.message : String(error)}`,
+			500,
+			error,
+		);
+	}
+}
+
 export default {
 	search,
 	get,
@@ -990,4 +1107,6 @@ export default {
 	deleteWorklog,
 	getCreateMeta,
 	createIssue,
+	getTransitions,
+	transitionIssue,
 };
