@@ -702,6 +702,66 @@ const CreateIssueResponseSchema = z.object({
 });
 export type CreateIssueResponse = z.infer<typeof CreateIssueResponseSchema>;
 
+/**
+ * Transition status target schema
+ */
+const TransitionStatusSchema = z.object({
+	self: z.string(),
+	description: z.string().optional(),
+	iconUrl: z.string().optional(),
+	id: z.string(),
+	name: z.string(),
+	statusCategory: z.object({
+		self: z.string(),
+		id: z.number(),
+		key: z.string(),
+		colorName: z.string(),
+		name: z.string(),
+	}).optional(),
+});
+
+/**
+ * Issue transition schema
+ */
+const IssueTransitionSchema = z.object({
+	id: z.string(),
+	name: z.string(),
+	to: TransitionStatusSchema,
+	hasScreen: z.boolean().optional(),
+	isGlobal: z.boolean().optional(),
+	isInitial: z.boolean().optional(),
+	isConditional: z.boolean().optional(),
+	isLooped: z.boolean().optional(),
+	fields: z.record(z.string(), CreateMetaFieldSchema).optional(),
+});
+export type IssueTransition = z.infer<typeof IssueTransitionSchema>;
+
+/**
+ * Get transitions response schema
+ */
+const GetTransitionsResponseSchema = z.object({
+	expand: z.string().optional(),
+	transitions: z.array(IssueTransitionSchema),
+});
+export type GetTransitionsResponse = z.infer<typeof GetTransitionsResponseSchema>;
+
+/**
+ * Parameters for transitioning an issue
+ */
+export interface TransitionIssueParams {
+	transition: {
+		id: string;
+		looped?: boolean;
+	};
+	fields?: Record<string, unknown>;
+	update?: Record<string, unknown[]>;
+	historyMetadata?: Record<string, unknown>;
+	properties?: Array<{
+		key: string;
+		value: unknown;
+	}>;
+}
+
 // Export schemas needed by the service implementation
 export {
 	IssueSchema,
@@ -714,4 +774,6 @@ export {
 	CommentBodySchema,
 	CreateMetaResponseSchema,
 	CreateIssueResponseSchema,
+	GetTransitionsResponseSchema,
+	IssueTransitionSchema,
 };
