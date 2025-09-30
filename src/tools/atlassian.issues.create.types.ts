@@ -45,7 +45,12 @@ export const CreateIssueToolArgsSchema = z.object({
 		.optional()
 		.describe('Issue description in markdown format'),
 	priority: z.string().optional().describe('Priority name or ID'),
-	assignee: z.string().optional().describe('Assignee account ID or email'),
+	assignee: z
+		.string()
+		.optional()
+		.describe(
+			'Assignee account ID, email address, or username. Will be automatically resolved to account ID',
+		),
 	labels: z.array(z.string()).optional().describe('Array of labels to apply'),
 	components: z
 		.array(z.string())
