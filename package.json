@@ -1,5 +1,5 @@
 {
-  "name": "@aashari/mcp-server-atlassian-jira",
+  "name": "@dmikushin/mcp-server-atlassian-jira",
   "version": "2.1.1",
   "description": "Node.js/TypeScript MCP server for Atlassian Jira. Equips AI systems (LLMs) with tools to list/get projects, search/get issues (using JQL/ID), and view dev info (commits, PRs). Connects AI capabilities directly into Jira project management and issue tracking workflows.",
   "main": "dist/index.js",
@@ -7,7 +7,11 @@
   "type": "commonjs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aashari/mcp-server-atlassian-jira.git"
+    "url": "git+https://github.com/dmikushin/mcp-server-atlassian-jira.git"
+  },
+  "homepage": "https://github.com/dmikushin/mcp-server-atlassian-jira#readme",
+  "bugs": {
+    "url": "https://github.com/dmikushin/mcp-server-atlassian-jira/issues"
   },
   "bin": {
     "mcp-atlassian-jira": "./dist/index.js"
@@ -58,7 +62,7 @@
     "cli",
     "mcp-inspector"
   ],
-  "author": "",
+  "author": "Dmitry Mikushin <dmitry@kernelgen.org>",
   "license": "ISC",
   "devDependencies": {
     "@eslint/js": "^9.35.0",

@@ -2,7 +2,7 @@
 
 Transform how you manage and track your work by connecting Claude, Cursor AI, and other AI assistants directly to your Jira projects, issues, and workflows. Get instant project insights, streamline issue management, and enhance your team collaboration.
 
-[![NPM Version](https://img.shields.io/npm/v/@aashari/mcp-server-atlassian-jira)](https://www.npmjs.com/package/@aashari/mcp-server-atlassian-jira)
+[![NPM Version](https://img.shields.io/npm/v/@dmikushin/mcp-server-atlassian-jira)](https://www.npmjs.com/package/@dmikushin/mcp-server-atlassian-jira)
 
 ## What You Can Do
 
@@ -43,13 +43,13 @@ export ATLASSIAN_USER_EMAIL="your.email@company.com"
 export ATLASSIAN_API_TOKEN="your_api_token"
 
 # List your Jira projects
-npx -y @aashari/mcp-server-atlassian-jira ls-projects
+npx -y @dmikushin/mcp-server-atlassian-jira ls-projects
 
 # Get details about a specific project
-npx -y @aashari/mcp-server-atlassian-jira get-project --project-key-or-id DEV
+npx -y @dmikushin/mcp-server-atlassian-jira get-project --project-key-or-id DEV
 
 # Search for issues
-npx -y @aashari/mcp-server-atlassian-jira ls-issues --project-key-or-id DEV
+npx -y @dmikushin/mcp-server-atlassian-jira ls-issues --project-key-or-id DEV
 ```
 
 ## Connect to AI Assistants
@@ -63,7 +63,7 @@ Add this to your Claude configuration file (`~/.claude/claude_desktop_config.jso
   "mcpServers": {
     "jira": {
       "command": "npx",
-      "args": ["-y", "@aashari/mcp-server-atlassian-jira"],
+      "args": ["-y", "@dmikushin/mcp-server-atlassian-jira"],
       "env": {
         "ATLASSIAN_SITE_NAME": "your-company",
         "ATLASSIAN_USER_EMAIL": "your.email@company.com",
@@ -81,7 +81,7 @@ Restart Claude Desktop, and you'll see "🔗 jira" in the status bar.
 Most AI assistants support MCP. Install the server globally:
 
 ```bash
-npm install -g @aashari/mcp-server-atlassian-jira
+npm install -g @dmikushin/mcp-server-atlassian-jira
 ```
 
 Then configure your AI assistant to use the MCP server with STDIO transport.
@@ -102,7 +102,7 @@ Create `~/.mcp/configs.json` for system-wide configuration:
 }
 ```
 
-**Alternative config keys:** The system also accepts `"atlassian-jira"`, `"@aashari/mcp-server-atlassian-jira"`, or `"mcp-server-atlassian-jira"` instead of `"jira"`.
+**Alternative config keys:** The system also accepts `"atlassian-jira"`, `"@dmikushin/mcp-server-atlassian-jira"`, or `"mcp-server-atlassian-jira"` instead of `"jira"`.
 
 ## Real-World Examples
 
@@ -160,7 +160,7 @@ Ask your AI assistant:
 3. **Test your credentials**:
    ```bash
    # Test your credentials work
-   npx -y @aashari/mcp-server-atlassian-jira ls-projects
+   npx -y @dmikushin/mcp-server-atlassian-jira ls-projects
    ```
 
 ### "Project not found" or "Issue not found"
@@ -168,7 +168,7 @@ Ask your AI assistant:
 1. **Check project key spelling**:
    ```bash
    # List your projects to see the correct keys
-   npx -y @aashari/mcp-server-atlassian-jira ls-projects
+   npx -y @dmikushin/mcp-server-atlassian-jira ls-projects
    ```
 
 2. **Verify access permissions**:
